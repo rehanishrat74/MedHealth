@@ -1,0 +1,136 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="MedHealthSolutions.SiteMaster" %>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title><%=MedHealthSolutions.Classes.config.DisplayName() %> - <asp:ContentPlaceHolder ID="HeadContent" runat="server"/></title>
+    <link rel='stylesheet' href='Styles/Site.css?<%=MedHealthSolutions.Classes.portalVersion.info() %>' type='text/css' media='screen' />
+    <link rel='stylesheet' href='Styles/Menu.css?<%=MedHealthSolutions.Classes.portalVersion.info() %>' type='text/css' media='screen' />
+    <link rel='stylesheet' href='Styles/chosen.css?<%=MedHealthSolutions.Classes.portalVersion.info() %>' type='text/css' media='screen' />   
+    <link rel='stylesheet' href='Styles/jquery.datepick.css' type='text/css' media='screen' /> 
+
+    <script type="text/javascript" src="Scripts/constants.js?x<%=MedHealthSolutions.Classes.portalVersion.info() %>"></script>
+    <script type="text/javascript" src="Scripts/jquery-2.1.0.min.js"></script>
+    <script type="text/javascript" src="Scripts/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="Scripts/Sha1.js"></script>
+    <script type="text/javascript" src="Scripts/jquery.mask.min.js"></script>
+    <script type="text/javascript" src="Scripts/chosen.jquery.min.js"></script>
+    <script type="text/javascript" src="Scripts/common.js?<%=MedHealthSolutions.Classes.portalVersion.info() %>"></script>
+    <script type="text/javascript" src="Scripts/jquery.plugin.min.js" language="javascript"></script>
+    <script type="text/javascript" src="Scripts/jquery.datepick.min.js" language="javascript"></script>
+    <meta name='robots' content='noindex,follow' />
+    <script type="text/javascript">
+        var no_action_bar = false;
+        $(document).ready(function () {
+            $('.dtmsk').mask('00/00/0000', { placeholder: "__/__/____" }, { 'translation': { 0: { pattern: /[0-9*]/}} });
+            $('.dtmsk').change(function () {
+                if (this.value!="" && !is_date(this.value)) {
+                    $(this).addClass("txt_err");
+                    this.focus()
+                }
+                else {
+                    $(this).removeClass("txt_err");
+                }
+            });
+
+            verify_session();
+            keep_session();
+            $(document).click(keep_session);
+       });
+
+        $(window).bind('beforeunload', function (e) {
+            if (WinId && !WinId.closed) {
+                WinId.$("#isQA").val("1")
+                WinId.close();
+            }
+        });
+
+        $(window).scroll(function () {
+            shTopBar()
+        });
+
+        function shTopBar() {
+            if (no_action_bar) {
+                $("#page_header").hide()
+                $("#top_margin").hide()
+                $("#button_bar").show()
+            }
+            else {
+                $("#page_header").show()
+                $("#top_margin").show()
+                $("#button_bar").hide()
+            }
+            if ($(window).scrollTop() >= 60) {
+                $($('#page_header td')[0]).attr('id', 'logo_small');
+                $($('#page_header td')[2]).attr('id', 'page_header_title_small');
+            }
+            else {
+                $($('#page_header td')[0]).attr('id', 'logo');
+                $($('#page_header td')[2]).attr('id', 'page_header_title');
+            }
+        }
+        function topCancel() {
+            no_action_bar = false
+            shTopBar()
+            $("#rpt_tbl").show()
+            $("#entry_form").hide()
+        }
+    </script>
+</head>
+<body>
+        <table id='page_header'>
+        <tr>
+            <td id="logo" class="default_color">&nbsp;
+            <span class="hide">
+                <img src="images/processing.gif?<%=MedHealthSolutions.Classes.portalVersion.info() %>" />
+                <img src="imgs/edt.png?<%=MedHealthSolutions.Classes.portalVersion.info() %>" />
+                <img src="imgs/excl.gif?<%=MedHealthSolutions.Classes.portalVersion.info() %>" />
+                <img src="imgs/g_tck.png?<%=MedHealthSolutions.Classes.portalVersion.info() %>" />
+                <img src="imgs/y_tck.png?<%=MedHealthSolutions.Classes.portalVersion.info() %>" />
+                <img src="imgs/noteb.png?<%=MedHealthSolutions.Classes.portalVersion.info() %>" />
+            </span>
+            </td>
+            <td class="default_color"><asp:Label ID="lblMenu" runat="server"></asp:Label></td>
+            <td id="page_header_title" class="default_color"><asp:ContentPlaceHolder ID="TitleContent" runat="server"/></td>
+        </tr>
+        <tr>
+            <td class="user_info" colspan="3">
+                <a href='javascript:getProfile()'><asp:Label ID="lblFullname" runat="server"></asp:Label></a> | 
+                <asp:Label ID="lblLogout" runat="server"><a href="Login.aspx?clear=y">Log Out</a></asp:Label>
+                <asp:ContentPlaceHolder ID="DownloadIcons" runat="server"/>
+            </td>
+        </tr>
+        </table>
+        <table id='button_bar'>
+        <tr>
+            <td id="logo_small2" class="default_color">&nbsp;</td>
+            <td id="page_button_title" class="default_color">CHF</td>
+            <td class="default_color rt s5"><b class="btn6" style="width:90px" onclick="contactLog()" id="btnContactLog">Contact Log</b>&nbsp;<b class="btn6" onclick="topSave()">Save</b>&nbsp;<b class="btn6" onclick="topCancel()">Close</b>&nbsp; &nbsp; &nbsp; </td>
+        </tr>
+        </table>
+        <div id="top_margin"></div>
+        <div id="page_area"><form autocomplete='off' onsubmit='return(false)'>
+	        <asp:ContentPlaceHolder ID="BodyContent" runat="server"/></form>
+        </div>
+        <br />
+        <div class='cnt' id='cr'>&copy; <%=DateTime.Now.Year %> MedHealth Solutions</div>
+        <div class='cnt' id=cr><%=MedHealthSolutions.Classes.portalVersion.info() %> </div>
+        <br />
+        <div id='dialog'></div><div id="overlay"></div>
+        <div id="profile" class='rt hide'>
+            <table class='frm_tbl tp_lft tp_rht bt_lft bt_rht'>
+                <tr><th class="tp_lft s4">Username </th><td class="tp_rht" colspan=3 id='Prf_Username'>&nbsp;</td></tr>
+                <tr><th>Password</th><td colspan=3><input type='password' class=s33 id='Prf_Pwd1' />&nbsp;Re-enter&nbsp;<input type='password' class=s33 id='Prf_Pwd2' /></td></tr>
+                <tr><th>Lastname, Firstname</th><td colspan=3><input type='text' id='Prf_Lastname' />, <input type='text' id='Prf_Firstname' /></td></tr>
+                <tr><th>Email Address</th><td colspan=3><input type='text' id='Prf_email_address' class=s5 /></td></tr>
+                <tr><th>&nbsp;</th><td colspan=3>
+                    <div class="red" id="Prf_Err"></div><br />
+                    <b class="btn" onclick="saveProfile()">Update Profile</b> &nbsp;<b class="btn" onclick="closeProfile()">Cancel</b><br /><br />
+                </td></tr>
+                <tr><td class="bt_rht bt_lft pad10 frm_td" colspan='2' id='tdUserProfile'></td></tr>
+            </table>
+        </div>
+        <div id='dialog_loading'><img src='../images/processing.gif'></div>
+        <div class='session_expire hide'>Warning! Your session with server will expire in <span id='se_seconds'>X</span> seconds, click here to keep the session</div>
+</body>
+</html>

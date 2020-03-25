@@ -1,0 +1,30 @@
+<html>
+	<head>
+		<title>Image Annotations</title>
+		<style type="text/css" media="all">@import "css/annotation.css";</style>
+		<style type="text/css" media="all">@import "../Styles/Site.css";</style>
+		
+		<script type="text/javascript" src="dist/js/jquery.min.js"></script>
+		<script type="text/javascript" src="dist/js/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="js/jquery.annotate.js"></script>
+
+		<script language="javascript">
+			var scanned_id = 1234;
+			$(window).load(function() {
+				$("#toAnnotate").annotateImage({
+					getUrl: "get.html",
+					saveUrl: "save.html",
+					deleteUrl: "delete.html",
+					editable: true
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<div>
+			<img id="toAnnotate" src="images/trafalgar-square-annotated.jpg" alt="Trafalgar Square" width="600" height="398" />
+			<br><br><div id='listAnnotate'></div>
+			<br><br><b class="btn5" id='addAnnotations'>Add Note</b>
+		</div>
+	</body>
+</html>
